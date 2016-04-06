@@ -1,0 +1,40 @@
+#!/bin/sh
+
+b=`cat /etc/rc.button/btn_state.txt`
+i=0
+led_i=0
+speed=10
+
+until [ "$b" = "released" ]
+do
+    b=`cat /etc/rc.button/btn_state.txt`
+    #echo $i$b | logger
+    if [ $i -gt 300 ]||[ "$b" = "released" ]
+    then
+      break
+    fi
+
+    if [ `expr $i % $speed` == 0 ]&&[ $led_i -lt 8 ]
+    then
+      #echo $i$b | logger
+      /etc/rc.button/leds single $led_i
+        if [ $led_i -lt 4 ]
+        then
+          printf 'reset\n' > /etc/rc.button/msg_state.txt
+        elif [ $led_i -eq 4 ]
+        then
+          #echo "send to testchannel" | logger
+          printf 'test\n' > /etc/rc.button/msg_state.txt
+        elif [ $led_i -eq 7 ]
+        then
+          #echo "send to alarmchannel" | logger
+          printf 'alarm\n' > /etc/rc.button/msg_state.txt
+          /etc/rc.button/leds sirene &
+          /etc/rc.button/telegram alarm &
+        fi
+
+      led_i=`expr $led_i + 1`
+    fi
+
+    i=`expr $i + 1`
+done

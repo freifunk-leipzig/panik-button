@@ -1,0 +1,40 @@
+#!/bin/sh                                                                                                                                                                        
+                                                                                                                                                              
+                                                                                                                                                                                 
+time=$(date +"Nachricht abgesetzt am %d.%m.%Y um %H:%M:%S Uhr")                                                                                                                 
+botToken="127450817:AAEy6Oi0OJEVPfDBeY08V6dlvrHdygjydaE"                                                                                                                         
+chatID_testchannel="-101693396"                                                                                                                                                  
+chatID_alarmchannel="-1001026876546"                                                                                                                                             
+message="alarm @ Conne Island / Koburger Str. 3 (https://goo.gl/maps/YSq8fda7UQQ2), $time "                                                             
+                                                                                                                                                                                 
+chatID=""                                                                                                                                                                        
+                                                                                                                                                                                 
+case "$1" in                                                                                                                                                                     
+        test)                                                                                                                                                                    
+        #echo "testchannel var set" | logger                                                                                                                                      
+        chatID=$chatID_testchannel                                                                                                                                               
+        ;;                                                                                                                                                                       
+        alarm)                                                                                                                                                                   
+        #echo "testchannel var set" | logger                                                                                                                                      
+        chatID=$chatID_alarmchannel                                                                                                                                              
+        ;;                                                                                                                                                                       
+esac                                                                                                                                                                             
+                                                                                                                                                                                 
+#result=`curl -k  "https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatID&text=$message" --max-time 2`
+result=`curl -k  "https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatID&text=$message"`                                                                   
+echo "${result}"                                                                                                                                                                 
+response=$result                                                                                                                                                                 
+search=`echo $response|awk '{print match($0,"ok")}'`                                                                                                                             
+if [ "$1" = "alarm" ]
+then
+        if [ $search -gt 0 ]
+        then
+                #echo "Success! Message sent!"
+                printf 'reset\n' > /etc/rc.button/msg_state.txt
+                /etc/rc.button/leds on &
+		/etc/rc.button/leds on
+        else
+                #echo "fail...";
+                /etc/rc.button/leds morse &
+        fi
+fi              

@@ -1,0 +1,70 @@
+#!/bin/sh
+
+LED0=tp-link\:blue\:wlan
+LED1=tp-link\:blue\:re
+LED2=tp-link\:blue\:signal5
+LED3=tp-link\:blue\:signal4
+LED4=tp-link\:blue\:signal3
+LED5=tp-link\:blue\:signal2
+LED6=tp-link\:blue\:signal1
+LED7=tp-link\:blue\:lan
+#LED8=ath9k-phy0
+
+
+b=`cat /etc/rc.button/msg_state.txt`
+
+led_ctrl_all () {
+        i=0
+        while [ $i -lt 8 ]
+        do
+                eval "echo $1 > /sys/class/leds/\$LED$i/$2"
+                i=`expr $i + 1`
+        done
+}
+
+led_ctrl_one () {
+        eval "echo $1 > /sys/class/leds/\$LED$3/$2"
+}
+
+
+led_sirene () {
+        i=0
+        while [ "$b" = "alarm" ]
+        do
+                b=`cat /etc/rc.button/msg_state.txt`
+                led_ctrl_all 0 brightness &
+                eval "echo 255 > /sys/class/leds/\$LED$i/brightness"
+                i=`expr $i + 1`
+                if [ $i -gt 7 ]
+                then
+                        i=0
+                fi
+
+        done
+}
+
+case $1 in
+        off)
+                #echo "leds aus" | logger
+                led_sirene stop
+                led_ctrl_all 0 brightness
+        ;;
+        on)
+                #echo "leds an" | logger
+                led_ctrl_all 255 brightness
+        ;;
+        morse)
+                #echo "leds morse" | logger
+                led_ctrl_all morse trigger
+                led_ctrl_all S message
+                led_ctrl_all 100 delay
+        ;;
+        sirene)
+                #echo "leds sirene" | logger
+                led_sirene &
+        ;;
+        single)
+                #echo "single led" | logger
+                led_ctrl_one 255 brightness $2
+        ;;
+esac

@@ -1,0 +1,27 @@
+#!/bin/sh
+. /lib/functions.sh  
+                             
+b=`cat /etc/rc.button/msg_state.txt`
+
+case "$ACTION" in                                                                                                                                                                
+        pressed)                                                                                                                                                                 
+                #echo "pressed_btn" | logger                                                                                                                                      
+                printf 'pressed\n' > /etc/rc.button/btn_state.txt                                                                                                                             
+                /etc/rc.button/loop &                                                                                                                                             
+                #/etc/rc.button/leds on                                                                                                                                           
+        ;;                                                                                                                                                                       
+        released)                                                                                                                                                                
+                #echo "released_btn" | logger                                                                                                                                    
+                printf 'released\n' > /etc/rc.button/btn_state.txt
+                                                                                                                                                  
+                #if [ "$SEEN" -lt 1 ]    
+                if [ "$b" = "reset" ]                                                                                                                                
+                then                                                                                                                                                             
+                        /etc/rc.button/leds off &
+                elif [ "$b" = "test" ]
+                then 
+                        /etc/rc.button/leds off &
+                        /etc/rc.button/telegram test &                                                                                                                                                           
+                fi                                                                                                                                                               
+        ;;                                                                                                                                                                       
+esac
