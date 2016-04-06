@@ -2,10 +2,10 @@
                                                                                                                                                               
                                                                                                                                                                                  
 time=$(date +"Nachricht abgesetzt am %d.%m.%Y um %H:%M:%S Uhr")                                                                                                                 
-botToken="127450817:AAEy6Oi0OJEVPfDBeY08V6dlvrHdygjydaE"                                                                                                                         
-chatID_testchannel="-101693396"                                                                                                                                                  
-chatID_alarmchannel="-1001026876546"                                                                                                                                             
-message="alarm @ Conne Island / Koburger Str. 3 (https://goo.gl/maps/YSq8fda7UQQ2), $time "                                                             
+botToken="12:44"                                                                                                                         
+chatID_testchannel="-10999"                                                                                                                                                  
+chatID_alarmchannel="-12349999"                                                                                                                                             
+message="panik @, $time "                                                             
                                                                                                                                                                                  
 chatID=""                                                                                                                                                                        
                                                                                                                                                                                  
